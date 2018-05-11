@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 #load in data
 #missing values "?" is replaced with -1 for now
@@ -10,7 +11,7 @@ def loadData(fileName):
     for i in range(0,np.size(breastCancerData[:,0])):
         for j in range(0,np.size(breastCancerData[0,:])):
             if (breastCancerData[i,j] == -1):
-                breastCancerData[i,j] = -1
+                breastCancerData[i,j] = -1 #whatever to replace missing data
 
     #print breastCancerData
     return breastCancerData
@@ -101,7 +102,7 @@ def performance(actual, predict):
 
 
 #Question 2
-def k_fold_cross_validation(dataSet, neighbors, k):
+def k_fold_cross_validation(dataSet, neighbors, k, p_value):
     data = shuffleData(dataSet)
     sections = data.shape[0] / k
     starting = 0
@@ -119,10 +120,11 @@ def k_fold_cross_validation(dataSet, neighbors, k):
         #stores the acutal label for the testing set and compare to predicted
         actualLabels = data[starting:sections * i, 9:]
         #cut out the testing set from the data set the the rest are training dats
+        #found the slice funtion on stackoverflow
         trainingSet = np.delete(data, slice(starting, (sections * i)), axis=0)[:, :9]
         #stores the label for the training data
         trainingSetLabels = np.delete(data, slice(starting, (sections * i)), axis=0)[:, 9:]
-        y_pred = knn_classifier(testingSet, trainingSet, trainingSetLabels, neighbors, 2)
+        y_pred = knn_classifier(testingSet, trainingSet, trainingSetLabels, neighbors, p_value)
         starting = sections * i
         print y_pred
 
@@ -142,6 +144,25 @@ def k_fold_cross_validation(dataSet, neighbors, k):
     print "Sensitivity Standard Deviation: " + str(np.std(sensitivityArray))
     print "\nSpecificity Mean: " + str(np.mean(specificityArray))
     print "Specificity Standard Deviation: " + str(np.std(specificityArray))
+
+    #plot x (number of nearest neighbor) vs y (performance)
+    plt.plot(accuracyArray)
+    plt.title("Accuracy, P = " + str(p_value))
+    plt.ylabel("Accuracy")
+    plt.xlabel("Number of nearest neighbors: " + str(neighbors))
+    plt.show()
+
+    plt.plot(sensitivityArray)
+    plt.title("Sensitivity, P = " + str(p_value))
+    plt.ylabel("Sensitivity")
+    plt.xlabel("Number of nearest neighbors: " + str(neighbors))
+    plt.show()
+
+    plt.plot(specificityArray)
+    plt.title("Specificity, P = " + str(p_value))
+    plt.ylabel("Specificity")
+    plt.xlabel("Number of nearest neighbors: " + str(neighbors))
+    plt.show()
     
     
 
@@ -160,5 +181,10 @@ if (option == "1"):
     p_value = input("Enter p value for the classifier: ")
     print knn_classifier(x_test, x_train, y_train, k_value, p_value)
 elif (option == "2"):
-    k_fold_cross_validation(breastCancerData, 3, 10)
+    neighbor_nums = input("Enter number of nearest neighbors you are going to user: ")
+    userinput = raw_input("Enter p value for knn_classifier: ")
+    if (userinput == "1"):
+        k_fold_cross_validation(breastCancerData, neighbor_nums, 10, 1)
+    elif (userinput == "2"):
+        k_fold_cross_validation(breastCancerData, neighbor_nums, 10, 2)
     
