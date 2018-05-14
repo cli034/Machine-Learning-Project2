@@ -34,6 +34,8 @@ def distance(x,y,p):
 
 #Question 1
 #for each test compare to all of the train
+#k is the number of nearest neighbors you select
+#p is the parameter for Lp norm distance formula, p = 1 or p = 2
 def knn_classifier(x_test, x_train, y_train, k, p):
     y_pred = []
     
@@ -102,6 +104,7 @@ def performance(actual, predict):
 
 
 #Question 2
+#k value is how many times we fold
 def k_fold_cross_validation(dataSet, neighbors, k, p_value):
     data = shuffleData(dataSet)
     sections = data.shape[0] / k
@@ -110,6 +113,8 @@ def k_fold_cross_validation(dataSet, neighbors, k, p_value):
     accuaryList = []
     sensitivityList = []
     specificityList = []
+
+    array_fold = [] #this is just an array for the x-axis of the graph
 
     for i in range(1, k + 1):
         accuracyTemp = 0
@@ -132,6 +137,7 @@ def k_fold_cross_validation(dataSet, neighbors, k, p_value):
         accuaryList.append(accuracyTemp)
         sensitivityList.append(sensitivityTemp)
         specificityList.append(specificityTemp)
+        array_fold.append(i)
     
     accuracyArray = np.array(accuaryList)
     sensitivityArray = np.array(sensitivityList)
@@ -146,22 +152,26 @@ def k_fold_cross_validation(dataSet, neighbors, k, p_value):
     print "Specificity Standard Deviation: " + str(np.std(specificityArray))
 
     #plot x (number of nearest neighbor) vs y (performance)
-    plt.plot(accuracyArray)
+    plt.plot(array_fold, accuracyArray)
+    #plt.errorbar(accuracyArray, np.std(accuracyArray))
     plt.title("Accuracy, P = " + str(p_value))
     plt.ylabel("Accuracy")
     plt.xlabel("Number of nearest neighbors: " + str(neighbors))
+    plt.errorbar(array_fold, accuracyArray, yerr=np.std(accuracyArray), fmt='.')
     plt.show()
 
-    plt.plot(sensitivityArray)
+    plt.plot(array_fold, sensitivityArray)
     plt.title("Sensitivity, P = " + str(p_value))
     plt.ylabel("Sensitivity")
     plt.xlabel("Number of nearest neighbors: " + str(neighbors))
+    plt.errorbar(array_fold, sensitivityArray, yerr=np.std(sensitivityArray), fmt='.')
     plt.show()
 
-    plt.plot(specificityArray)
+    plt.plot(array_fold, specificityArray)
     plt.title("Specificity, P = " + str(p_value))
     plt.ylabel("Specificity")
     plt.xlabel("Number of nearest neighbors: " + str(neighbors))
+    plt.errorbar(array_fold, specificityArray, yerr=np.std(specificityArray), fmt='.')
     plt.show()
     
     
