@@ -191,7 +191,7 @@ if (option == "1"):
     p_value = input("Enter p value for the classifier: ")
     print knn_classifier(x_test, x_train, y_train, k_value, p_value)
 elif (option == "2"):
-    neighbor_nums = input("Enter number of nearest neighbors you are going to user: ")
+    neighbor_nums = input("Enter number of nearest neighbors you are going to use: ")
     userinput = raw_input("Enter p value for knn_classifier: ")
     if (userinput == "1"):
         k_fold_cross_validation(breastCancerData, neighbor_nums, 10, 1)
